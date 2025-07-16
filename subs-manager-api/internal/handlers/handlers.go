@@ -132,3 +132,4 @@ func (h *Handler) GetTotalPriceByFiltersHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+

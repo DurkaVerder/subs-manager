@@ -3,6 +3,8 @@ package postgresql
 import (
 	"database/sql"
 	"subs-manager-api/internal/models"
+
+	_ "github.com/lib/pq"
 )
 
 const (
@@ -19,8 +21,21 @@ type Postgres struct {
 	db *sql.DB
 }
 
-func NewPostgres(db *sql.DB) *Postgres {
+func NewPostgres(dns string) *Postgres {
+	db, err := connectDB(dns)
+	if err != nil {
+		panic(err)
+	}
+
 	return &Postgres{db: db}
+}
+
+func connectDB(dns string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dns)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 func (p *Postgres) GetSubscription(serviceName, userID string) (models.ServiceSubscription, error) {

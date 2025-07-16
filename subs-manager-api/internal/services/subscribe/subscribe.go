@@ -1,6 +1,7 @@
 package subscribe
 
 import (
+	"strconv"
 	"subs-manager-api/internal/models"
 )
 
@@ -74,8 +75,13 @@ func (s *SubscribeService) UpdateSubscription(subscription models.ServiceSubscri
 	return nil
 }
 
-func (s *SubscribeService) DeleteSubscription(ID int64) error {
-	if err := s.storage.DeleteSubscription(ID); err != nil {
+func (s *SubscribeService) DeleteSubscription(ID string) error {
+	id, err := strconv.ParseInt(ID, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	if err := s.storage.DeleteSubscription(id); err != nil {
 		return err
 	}
 

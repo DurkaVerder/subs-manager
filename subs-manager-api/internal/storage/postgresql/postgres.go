@@ -11,6 +11,8 @@ const (
 	CreateSubscriptionQuery = `INSERT INTO subscriptions (service_name, user_id, price, start_date, end_date) VALUES ($1, $2, $3, $4, $5)`
 	UpdateSubscriptionQuery = `UPDATE subscriptions SET price = $1, start_date = $2, end_date = $3 WHERE id = $4`
 	DeleteSubscriptionQuery = `DELETE FROM subscriptions WHERE id = $1`
+
+	GetSubscriptionFilterQuery = `SELECT * FROM subscriptions WHERE user_id = $1 AND start_date >= $2 AND end_date <= $3 AND (service_name = $4 OR $4 IS NULL)`
 )
 
 type Postgres struct {
@@ -79,4 +81,27 @@ func (p *Postgres) DeleteSubscription(ID int64) error {
 	}
 
 	return nil
+}
+
+func (p *Postgres) GetSubscriptionFilter(filters models.DataFilter) ([]models.ServiceSubscription, error) {
+	rows, err := p.db.Query(GetSubscriptionFilterQuery, filters.UserID, filters.StartDate, filters.EndDate, filters.ServiceName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subscribes []models.ServiceSubscription
+	for rows.Next() {
+		var subscription models.ServiceSubscription
+		if err := rows.Scan(&subscription.Name, &subscription.UserID, &subscription.Price, &subscription.StartDate, &subscription.EndDate); err != nil {
+			return nil, err
+
+		}
+		subscribes = append(subscribes, subscription)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscribes, nil
 }

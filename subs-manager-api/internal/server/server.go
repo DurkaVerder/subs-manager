@@ -1,8 +1,6 @@
 package server
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,10 +22,14 @@ func NewServer(handler Handler, r *gin.Engine) *Server {
 	return &Server{handler: handler, r: r}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(port string) {
 	s.initRouter()
 
-	if err := s.r.Run(os.Getenv("PORT")); err != nil {
+	if port == "" {
+		port = ":8080"
+	}
+
+	if err := s.r.Run(port); err != nil {
 		panic(err)
 	}
 }

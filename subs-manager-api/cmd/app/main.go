@@ -1,19 +1,39 @@
 package main
 
+import (
+	"log"
+	"os"
+	"subs-manager-api/internal/handlers"
+	"subs-manager-api/internal/server"
+	"subs-manager-api/internal/services/subscribe"
+	"subs-manager-api/internal/storage/postgresql"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
 func main() {
-	// TODO initialize environment variables
+	initEnv()
 
 	// TODO initialize logger
 
-	// TODO initialize database connection
+	storage := postgresql.NewPostgres(os.Getenv("DATABASE_URL"))
 
-	// TODO initialize service
+	subService := subscribe.NewSubscribeService(storage)
 
-	// TODO initialize handlers
+	handlers := handlers.NewHandler(subService)
 
-	// TODO initialize router
+	r := gin.Default()
 
-	// TODO start the server
+	srv := server.NewServer(handlers, r)
 
-	// TODO handle shutdown
+	srv.Start(os.Getenv("PORT"))
+}
+
+func initEnv() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("No .env file found or failed to load: %v", err)
+	}
 }

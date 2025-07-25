@@ -14,7 +14,7 @@ const (
 )
 
 type SubscribeService interface {
-	GetSubscriptionFilter(data models.DataFilter) ([]models.ServiceSubscriptionResponse, error)
+	GetSubscriptionByFilter(data models.DataFilter) ([]models.ServiceSubscriptionResponse, error)
 	GetSubscription(serviceName, userID string) (models.ServiceSubscriptionResponse, error)
 	GetSubscriptions(userID string) ([]models.ServiceSubscriptionResponse, error)
 	GetTotalPriceByFilters(data models.DataFilter) (models.TotalPriceResponse, error)
@@ -132,4 +132,3 @@ func (h *Handler) GetTotalPriceByFiltersHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
-
